@@ -1,0 +1,12 @@
+---
+# tasks file for upgrade_packages
+- name: upgrade packages task
+  ansible.builtin.dnf:
+    update_cache: true
+    name: "*"
+    state: latest
+  register: upgradeResult
+
+- name: reboot system task
+  reboot:
+  when: upgradeResult.changed
