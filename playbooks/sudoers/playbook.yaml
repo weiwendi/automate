@@ -1,0 +1,13 @@
+#!/usr/bin/env playbook
+---
+- name: configuration sudo
+  hosts: nodes
+  become: true
+  gather_facts: false
+  vars:
+    sudouser: aiops
+
+  roles:
+    - role: sudoers
+      tags: sudoers
+...

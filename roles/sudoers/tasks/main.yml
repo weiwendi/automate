@@ -1,0 +1,8 @@
+---
+# tasks file for sudoers
+- name: configuration sudo user without password task
+  ansible.builtin.template:
+    src: sudouser.j2
+    dest: "/etc/sudoers.d/{{ sudouser }}"
+    mode: 0644
+    owner: root
