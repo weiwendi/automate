@@ -1,4 +1,4 @@
-# automate
+# Automate
 Automated deployment of Linux applications.
 # Author Information
 Author: weiwendi
