@@ -8,5 +8,6 @@ BSD
 
 Author Information
 ------------------
-Author: weiwendi
+Author: 魏文第
+
 欢迎关注公众号：魏文第

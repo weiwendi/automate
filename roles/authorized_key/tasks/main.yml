@@ -2,6 +2,6 @@
 # tasks file for authorized_key
 - name: add the public key to the specified user of the remote host play
   ansible.builtin.authorized_key:
-    comment: aiops user public key
+    comment: add user public key
     user: aiops
     key: "{{ lookup('file', '/home/aiops/.ssh/id_rsa.pub') }}"
