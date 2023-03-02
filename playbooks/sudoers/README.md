@@ -28,8 +28,9 @@ License
 
 BSD
 
-Author Information
-------------------
+Author
+------
 
 作者: 魏文第
+
 欢迎关注公众号：魏文第
