@@ -1,0 +1,10 @@
+#!/usr/bin/env playbook
+---
+- name: add the public key to the aiops user play
+  hosts: nodes
+  become: true
+  gather_facts: false
+
+  roles:
+    - role: change_hostname
+...

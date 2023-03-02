@@ -1,0 +1,5 @@
+---
+# tasks file for change_hostname
+- name: change host name task
+  ansible.builtin.shell:
+    cmd: hostnamectl set-hostname "{{ inventory_hostname }}"
