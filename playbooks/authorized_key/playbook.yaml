@@ -1,7 +1,7 @@
 #!/usr/bin/env playbook
 ---
 - name: add the public key to the aiops user play
-  hosts: authkey
+  hosts: nodes
   gather_facts: false
 
   roles:

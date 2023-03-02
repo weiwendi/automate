@@ -8,7 +8,7 @@
 在 `hosts` inventory 中添加要配置免密登录的主机 IP，例如：
 
 ```ini
-[authkey]
+[nodes]
 192.168.1.10
 192.168.1.20
 ```
