@@ -1,0 +1,10 @@
+#!/usr/bin/env playbook
+---
+- name: setting many open files play
+  hosts: nodes
+  become: true
+  gather_facts: false
+
+  roles:
+    - role: ulimits
+...

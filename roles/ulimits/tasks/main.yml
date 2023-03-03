@@ -1,0 +1,7 @@
+---
+# tasks file for ulimits
+#
+- name: copy openfile.conf
+  ansible.builtin.copy:
+    src: openfile.conf
+    dest: /etc/security/limits.d/
