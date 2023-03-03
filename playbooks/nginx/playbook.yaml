@@ -1,0 +1,10 @@
+#!/usr/bin/env playbook
+---
+- name: deploy haproxy application play
+  hosts: lb
+  become: true
+  gather_facts: false
+
+  roles:
+    - role: nginx
+...
