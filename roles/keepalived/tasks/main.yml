@@ -1,0 +1,28 @@
+---
+# tasks file for keepalived
+#
+- name: install keepalived task
+  ansible.builtin.dnf:
+    name: keepalived
+    state: present
+
+- name: enabled keepalived service task
+  ansible.builtin.systemd:
+    enabled: true
+    name: keepalived
+
+- name: copy keepalived single active config file task
+  ansible.builtin.template:
+    src: single_active.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    force: true
+  notify: restart keepalived service handler
+  when: doubleActivity is false
+
+- name: copy keepalived doubble active config file task
+  ansible.builtin.template:
+    src: doubble_active.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+    force: true
+  notify: restart keepalived service handler
+  when: doubleActivity is true

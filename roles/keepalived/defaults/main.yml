@@ -1,0 +1,21 @@
+---
+# defaults file for keepalived
+#
+authPass: aiops
+broadcast: 10.211.55.255
+doubleActivity: false
+emails:
+  - user1@aiops.red
+  - user2@aiops.red
+  - user3@aiops.red
+interface: enp0s5
+interfaceID1: 1
+interfaceID2: 2
+lb1: lb1.server.aiops.red
+lb2: lb2.server.aiops.red
+sendEmail: monitor@aiops.red
+smtpServer: 10.211.55.10
+vip1: 10.211.55.251/24
+vip2: 10.211.55.252/24
+vrrpInstanceName1: singleActiveNginx
+vrrpInstanceName2: dubleActiveNginx

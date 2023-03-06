@@ -1,0 +1,11 @@
+#!/usr/bin/env playbook
+---
+- name: deploy keepalived application play
+  hosts: lb
+  become: true
+  gather_facts: true
+  vars_files: variables.yaml
+
+  roles:
+    - role: keepalived
+...
