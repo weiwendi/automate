@@ -1,6 +1,6 @@
-# Change Hostname Playbook Description
+# Deploy Nginx Playbook Description
 
-根据 hosts inventory 中的主机地址，修改对应主机的名称。
+自动化部署 Nginx。
 
 示例：
 -----
@@ -12,7 +12,7 @@ Ansible 控制节点能够通过主机名登录远程主机，可以通过 DNS �
 例如：
 
 ```ini
-[nodes]
+[lb]
 lb1.server.aiops.red
 lb2.server.aiops.red
 ```
@@ -29,8 +29,10 @@ cat /etc/hosts
 执行命令：
 
 ```bash
-ansible-playbook playbook.yaml
+ansible-playbook -i ./hosts playbook.yaml
 ```
+
+详细内容请参考 **魏文第** 公众号文章 "Linux 9 自动化部署 Keepalived + Nginx 高可用负载均衡器"。
 
 License
 -------

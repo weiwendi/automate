@@ -1,6 +1,6 @@
 #!/usr/bin/env playbook
 ---
-- name: deploy haproxy application play
+- name: deploy nginx application play
   hosts: lb
   become: true
   gather_facts: false

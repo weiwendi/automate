@@ -1,0 +1,7 @@
+---
+# defaults file for nginx
+#
+statusAllowIPs:
+  - 127.0.0.1
+  - 10.211.55.0/24
+statusPort: 80
