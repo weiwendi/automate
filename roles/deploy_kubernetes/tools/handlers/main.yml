@@ -1,2 +1,7 @@
 ---
 # handlers file for tools
+#
+- name: restart containerd service handler
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted

@@ -30,6 +30,7 @@
     src: containerd-config.toml
     dest: /etc/containerd/config.toml
     mode: 0644
+  notify: restart containerd service handler
 
 - name: copy crictl config file task
   ansible.builtin.copy:
@@ -40,7 +41,6 @@
 - name: started containerd service task
   ansible.builtin.systemd:
     name: containerd
-    state: started
     enabled: true
 
 - name: enable kubelet service task
