@@ -1,0 +1,49 @@
+---
+# tasks file for tools
+#
+- name: add docker official dnf repo task
+  ansible.builtin.yum_repository:
+    name: docker-ce
+    description: containerd repo
+    baseurl: https://mirrors.aliyun.com/docker-ce/linux/centos/$releasever/$basearch/stable
+    gpgcheck: false
+
+- name: add kubernetes tsinghua repo task
+  ansible.builtin.yum_repository:
+    name: kubernetes
+    description: kubernetes repo
+    baseurl: https://mirrors.tuna.tsinghua.edu.cn/kubernetes/yum/repos/kubernetes-el7-$basearch
+    gpgcheck: false
+
+- name: install the dependency package task
+  ansible.builtin.dnf:
+    name:
+      - containerd.io
+      - kubeadm
+      - kubectl
+      - kubelet
+      - ntpstat
+    state: present
+
+- name: copy containerd config file task
+  ansible.builtin.copy:
+    src: containerd-config.toml
+    dest: /etc/containerd/config.toml
+    mode: 0644
+
+- name: copy crictl config file task
+  ansible.builtin.copy:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+    mode: 0644
+
+- name: started containerd service task
+  ansible.builtin.systemd:
+    name: containerd
+    state: started
+    enabled: true
+
+- name: enable kubelet service task
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
