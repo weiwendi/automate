@@ -1,6 +1,11 @@
 ---
 # tasks file for firewalld
 #
+- name: started firewalld task
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+
 - name: disabled firewalld task
   ansible.posix.firewalld:
     port: "{{ item }}"
