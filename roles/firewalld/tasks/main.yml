@@ -1,0 +1,10 @@
+---
+# tasks file for firewalld
+#
+- name: disabled firewalld task
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ open_ports }}"
