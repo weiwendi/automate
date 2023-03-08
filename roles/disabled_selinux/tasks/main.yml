@@ -1,0 +1,11 @@
+---
+# tasks file for disabled_selinux
+#
+- name: disabled selinux task
+  ansible.posix.selinux:
+    state: disabled
+  register: out
+
+- name: reboot task
+  ansible.builtin.reboot:
+  when: out.changed
