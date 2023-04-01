@@ -48,3 +48,10 @@
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
   notify: restart nginx service handler
+
+- name: copy kube-apiserver config task
+  ansible.builtin.template:
+    src: kube-apiserver.conf.j2
+    dest: /etc/nginx/tcp.d/kube-apiserver.conf
+  notify: restart nginx service handler
+  when: kube-apiserver
