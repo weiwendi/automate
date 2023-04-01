@@ -5,6 +5,11 @@
   ansible.posix.selinux:
     state: disabled
 
+- name: started firewalld task
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+
 - name: enabled http service task
   ansible.builtin.firewalld:
     immediate: true
@@ -21,8 +26,16 @@
 
 - name: deploy nginx server task
   ansible.builtin.dnf:
-    name: nginx
+    name: "{{ item }}"
     state: present
+  with_items:
+    - nginx
+    - nginx-all-modules
+
+- name: create tcp stream directory task
+  ansible.builtin.file:
+    path: /etc/nginx/tcp.d
+    state: directory
 
 - name: started nginx service task
   ansible.builtin.systemd:
@@ -34,5 +47,4 @@
   ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/nginx.conf
-    force: true
   notify: restart nginx service handler

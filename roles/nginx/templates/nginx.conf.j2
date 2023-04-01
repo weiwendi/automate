@@ -6,6 +6,7 @@ pid /run/nginx.pid;
 
 # Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
 include /usr/share/nginx/modules/*.conf;
+include /etc/nginx/tcp.d/*.conf;
 
 events {
     worker_connections 10240;
