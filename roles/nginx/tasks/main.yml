@@ -54,4 +54,4 @@
     src: kube-apiserver.conf.j2
     dest: /etc/nginx/tcp.d/kube-apiserver.conf
   notify: restart nginx service handler
-  when: kube-apiserver
+  when: kube_apiserver
