@@ -1,0 +1,61 @@
+- name: distribute binary files to etcd nodes task
+  ansible.builtin.copy:
+    src: "/tmp/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    force: true
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - etcd
+    - etcdctl
+    - etcdutl
+
+- name: register etcd_ip variable task
+  ansible.builtin.debug:
+    msg: "{{ ansible_enp0s5.ipv4.address }}"
+  register: etcd_ip
+
+- name: create a data directory task
+  ansible.builtin.file:
+    path: /var/lib/etcd/{{ inventory_hostname }}
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+
+- name: create configuration file for etcd task
+  ansible.builtin.template:
+    src: etcd.conf.yaml.j2
+    dest: /etc/etcd/etcd.conf.yaml
+    owner: root
+    group: root
+    mode: 0600
+
+- name: started firewalld service task
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: turn on etcd ports in the firewalld task
+  ansible.builtin.firewalld:
+    port: 2379-2380/tcp
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: distribute etcd service unit files task
+  ansible.builtin.copy:
+    src: etcd.service
+    dest: /usr/lib/systemd/system/etcd.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: enable and start the etcd service task
+  ansible.builtin.systemd:
+    name: etcd.service
+    state: started
+    enabled: true
+    daemon_reload: true

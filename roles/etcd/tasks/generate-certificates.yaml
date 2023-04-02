@@ -1,0 +1,110 @@
+- name: create pki directory to house keys and certificates task
+  ansible.builtin.file:
+    path: ./files/pki
+    state: directory
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: generate private key task
+  community.crypto.openssl_privatekey:
+    path: "./files/pki/etcd.key"
+    type: RSA
+    size: 4096
+    state: present
+    force: true
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: generate csr task
+  community.crypto.openssl_csr:
+    path: "./files/pki/etcd.csr"
+    privatekey_path: "./files/pki/etcd.key"
+    common_name: "etcd"
+    key_usage:
+      - digitalSignature
+    extended_key_usage:
+      - serverAuth
+      - clientAuth
+    subject_alt_name: "{{ alt_name }}"
+    force: true
+  with_items: "{{ groups['etcds'] }}"
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: generate private key for ca task
+  community.crypto.openssl_privatekey:
+    path: files/pki/ca.key
+    type: RSA
+    size: 4096
+    state: present
+    force: true
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: generate csr for ca task
+  community.crypto.openssl_csr:
+    path: files/pki/ca.csr
+    privatekey_path: files/pki/ca.key
+    common_name: ca
+    organization_name: "Etcd CA"
+    basic_constraints:
+      - CA:TRUE
+      - pathlen:1
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+      - digitalSignature
+    force: true
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: generate self-signed ca certificate task
+  community.crypto.x509_certificate:
+    path: files/pki/etcd_ca.crt
+    privatekey_path: files/pki/ca.key
+    csr_path: files/pki/ca.csr
+    provider: selfsigned
+    entrust_not_after: +3650d
+    force: true
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: generate certificate signed with own ca certificate task
+  community.crypto.x509_certificate:
+    path: files/pki/etcd.crt
+    csr_path: files/pki/etcd.csr
+    ownca_path: files/pki/etcd_ca.crt
+    ownca_privatekey_path: files/pki/ca.key
+    provider: ownca
+    entrust_not_after: +3650d
+    force: true
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: create directory for etcd configuration task
+  ansible.builtin.file:
+    path: /etc/etcd/pki
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: copy ca certificate task
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/etcd/pki/
+    force: true
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - files/pki/etcd_ca.crt
+    - files/pki/etcd.crt
+    - files/pki/etcd.key

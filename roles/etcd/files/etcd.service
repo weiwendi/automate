@@ -1,0 +1,11 @@
+[Unit]
+Description=etcd distributed reliable key-value store
+After=network.target
+After=network-online.target
+Wants=network-online.target
+Documentation=https://github.com/etcd-io/etcd
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/etcd --config-file /etc/etcd/etcd.conf.yaml
+Restart=always

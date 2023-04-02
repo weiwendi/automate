@@ -1,0 +1,23 @@
+- name: download etcd tarball into the /tmp/ task
+  ansible.builtin.get_url:
+    url: "{{ etcd_download_url }}{{ etcd_version }}/etcd-{{ etcd_version }}-{{ os_arch }}.tar.gz"
+    dest: "/tmp/etcd-{{ etcd_version }}-{{ os_arch }}.tar.gz"
+    timeout: 60
+    force: true
+  become: false
+  delegate_to: localhost
+  run_once: true
+  retries: 3
+  delay: 3
+
+- name: unarchive etcd tarball task
+  ansible.builtin.unarchive:
+    src: "/tmp/etcd-{{ etcd_version }}-{{ os_arch }}.tar.gz"
+    dest: /tmp/
+    list_files: true
+    remote_src: false
+    extra_opts:
+      - --strip-components=1
+  become: false
+  delegate_to: localhost
+  run_once: true

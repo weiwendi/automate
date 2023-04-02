@@ -1,0 +1,4 @@
+- name: register etcd_ip variable task
+  ansible.builtin.debug:
+    msg: "{{ ansible_enp0s5.ipv4.address }}"
+  register: etcd_ip

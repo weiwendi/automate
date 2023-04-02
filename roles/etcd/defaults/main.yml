@@ -1,0 +1,15 @@
+---
+# defaults file for etcd
+#
+alt_name:
+  - IP:10.211.55.60
+  - IP:10.211.55.61
+  - IP:10.211.55.62
+  - IP:10.211.55.18
+  - IP:10.211.55.63
+  - IP:10.211.55.64
+  - IP:10.211.55.65
+  - IP:127.0.0.1
+etcd_download_url: https://github.com/etcd-io/etcd/releases/download/
+etcd_version: v3.5.7
+os_arch: linux-arm64

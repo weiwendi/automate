@@ -1,0 +1,17 @@
+data-dir: /var/lib/etcd/{{ inventory_hostname }}
+name: {{ inventory_hostname }}
+initial-advertise-peer-urls: https://{{ hostvars[inventory_hostname]['etcd_ip']['msg'] }}:2380
+listen-peer-urls: https://{{ hostvars[inventory_hostname]['etcd_ip']['msg'] }}:2380,https://127.0.0.1:2380
+advertise-client-urls: https://{{ hostvars[inventory_hostname]['etcd_ip']['msg'] }}:2379
+listen-client-urls: https://{{ hostvars[inventory_hostname]['etcd_ip']['msg'] }}:2379,https://127.0.0.1:2379
+initial-cluster-state: new
+initial-cluster: {% for host in groups['etcds'] %}{{ host }}=https://{{ hostvars[host]['etcd_ip']['msg'] }}:2380{% if not loop.last %},{% endif %}{% endfor %}
+
+client-transport-security:
+  cert-file: /etc/etcd/pki/etcd.crt
+  key-file: /etc/etcd/pki/etcd.key
+  trusted-ca-file: /etc/etcd/pki/etcd_ca.crt
+peer-transport-security:
+  cert-file: /etc/etcd/pki/etcd.crt
+  key-file: /etc/etcd/pki/etcd.key
+  trusted-ca-file: /etc/etcd/pki/etcd_ca.crt

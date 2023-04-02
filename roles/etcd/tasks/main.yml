@@ -1,0 +1,7 @@
+---
+# tasks file for etcd
+#
+- ansible.builtin.include_tasks: generate-certificates.yaml
+- ansible.builtin.include_tasks: download-etcd.yaml
+  when: download_etcd
+- ansible.builtin.include_tasks: install-etcd.yaml
