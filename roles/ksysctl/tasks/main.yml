@@ -1,0 +1,7 @@
+---
+# tasks file for ksysctl
+#
+- name: copy ksys.conf task
+  ansible.builtin.copy:
+    src: ksys.conf
+    dest: /etc/sysctl.d/ksys.conf
