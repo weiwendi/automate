@@ -1,0 +1,7 @@
+---
+# handlers file for chrony_client
+- name: restart chronyd service handler
+  become: true
+  ansible.builtin.systemd:
+    name: chronyd.service
+    state: restarted

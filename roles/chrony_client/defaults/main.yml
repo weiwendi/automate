@@ -1,0 +1,5 @@
+---
+# defaults file for chrony_client
+#
+ntpServers:
+  - ntp.aliyun.com

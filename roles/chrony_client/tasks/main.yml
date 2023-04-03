@@ -1,0 +1,22 @@
+---
+# tasks file for chrony_client
+- name: install chronyd service task
+  become: true
+  ansible.builtin.dnf:
+    name: chrony
+    state: latest
+
+- name: start chronyd service task
+  become: true
+  ansible.builtin.systemd:
+    name: chronyd.service
+    state: started
+    enabled: true
+
+- name: generate chrony.conf file from the template
+  become: true
+  ansible.builtin.template:
+    src: chrony_client.conf.j2
+    dest: /etc/chrony.conf
+    group: chrony
+  notify: restart chronyd service handler
