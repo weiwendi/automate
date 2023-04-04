@@ -5,3 +5,8 @@
   ansible.builtin.copy:
     src: ksys.conf
     dest: /etc/sysctl.d/ksys.conf
+  register: copyResult
+
+- name: reboot system task
+  reboot:
+  when: copyResult.changed
