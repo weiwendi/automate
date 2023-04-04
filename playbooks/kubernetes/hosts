@@ -1,0 +1,11 @@
+[lb]
+lb1.server.aiops.red
+lb2.server.aiops.red
+
+[etcds]
+etcd[1:3].server.aiops.red
+
+[kmasters]
+kmaster[1:3].server.aiops.red
+[knodes]
+knode[1:2].server.aiops.red

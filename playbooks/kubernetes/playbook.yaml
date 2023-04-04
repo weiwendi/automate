@@ -1,0 +1,35 @@
+#!/usr/bin/env playbook
+---
+- name: deploy lb play
+  hosts: lb
+  become: true
+  gather_facts: true
+  vars:
+    lb_install: false
+    kube_apiserver: false
+  roles:
+    - role: nginx
+      when: lb_install
+    - role: keepalived
+      when: lb_install
+
+- name: deploy etcd play
+  hosts: etcds
+  become: true
+  gather_facts: true
+  vars:
+    etcd_install: false
+    download_etcd: false
+  roles:
+    - role: etcd
+      when: etcd_install
+
+- name: deploy kubernetes cluster play
+  hosts: kmasters:knodes
+  become: true
+  gather_facts: true
+  vars_files:
+    - variables.yaml
+  roles:
+    - role: kubernetes
+      when: kInstall

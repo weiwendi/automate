@@ -1,0 +1,13 @@
+---
+# variables file for k8s
+#
+addWorker: false
+kInstall: false
+etcdIPs:
+  - 10.211.55.60
+  - 10.211.55.61
+  - 10.211.55.62
+ingressNodes:
+  - knode1.server.aiops.red
+masterInitial: 10.211.55.63
+configFilePath: /etc/kubernetes

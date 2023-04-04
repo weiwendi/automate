@@ -1,0 +1,20 @@
+---
+- name: set up the basic environment play
+  hosts: lb:etcds:kmasters:knodes
+  become: true
+  gather_facts: false
+  tasks:
+    - name: copy the /etc/hosts file to the remote host task
+      ansible.builtin.copy:
+        src: /etc/hosts
+        dest: /etc/hosts
+  roles:
+    - authorized_key
+    - sudoers
+    - chrony_client
+    - change_hostname
+    - ulimits
+    - ksysctl
+    - upgrade_packages
+    - disabled_selinux
+...
