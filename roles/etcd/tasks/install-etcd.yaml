@@ -56,6 +56,6 @@
 - name: enable and start the etcd service task
   ansible.builtin.systemd:
     name: etcd.service
-    state: started
+    state: restarted
     enabled: true
     daemon_reload: true
