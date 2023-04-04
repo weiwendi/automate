@@ -1,6 +1,9 @@
 ---
 # tasks file for keepalived
 #
+- name: set up the firewall to start the vrrp protocol task
+  ansible.builtin.shell: firewall-cmd --permanent --add-protocol=vrrp && firewall-cmd --reload
+
 - name: install keepalived task
   ansible.builtin.dnf:
     name: keepalived
