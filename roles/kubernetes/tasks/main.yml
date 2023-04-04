@@ -1,0 +1,9 @@
+---
+# tasks file for kubernetes
+#
+- ansible.builtin.include_tasks: prepare.yaml
+
+- ansible.builtin.include_tasks: tools.yaml
+
+- ansible.builtin.include_tasks: install.yaml
+  when: kInstall

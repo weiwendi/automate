@@ -1,0 +1,117 @@
+---
+# tasks file for install
+#
+- name: create directorys task
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ certificatePath }}/etcd"
+    - "{{ staticPath }}"
+    - "{{ componentPath }}"
+    
+- name: distribute etcd pki task
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ certificatePath }}/etcd"
+  with_items:
+    - "pki/etcd_ca.crt"
+    - "pki/etcd.crt"
+    - "pki/etcd.key"
+
+- name: kubectl completion task
+  ansible.builtin.shell:
+    cmd: kubectl completion bash > /etc/bash_completion.d/kubectl
+    creates: "/etc/bash_completion.d/kubectl"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: copy kubeadm init  file to initial master task
+  ansible.builtin.template:
+    src: kubeadm-init.yaml.j2
+    dest: "{{ configFilePath }}/kubeadm-init.yaml"
+    mode: 0600
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: initialize the cluster task
+  ansible.builtin.command:
+    cmd: kubeadm init --config {{ configFilePath }}/kubeadm-init.yaml --upload-certs --skip-phases=addon/kube-proxy
+    creates: "{{ certificatePath }}/ca.crt"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: kubeadm join config task
+  ansible.builtin.template:
+    src: kubeadm-join.yaml.j2
+    dest: "{{ configFilePath }}/kubeadm-join.yaml"
+    mode: 0600
+  when: masterInitial not in ansible_facts['all_ipv4_addresses']
+
+- name: kubeadm join task
+  ansible.builtin.command:
+    cmd: kubeadm join --config {{ configFilePath }}/kubeadm-join.yaml
+    creates: "{{ certificatePath }}/ca.crt"
+  throttle: 1
+  when: masterInitial not in ansible_facts['all_ipv4_addresses']
+
+- name: collect kubelet serving csr task
+  ansible.builtin.command:
+    cmd: "kubectl get csr --field-selector='spec.signerName=kubernetes.io/kubelet-serving' -o jsonpath='{.items[*].metadata.name}'"
+  environment:
+    KUBECONFIG: "{{ configFilePath }}/admin.conf"
+  register: kubelet_csr
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+  changed_when: false
+  failed_when: false
+
+- name: sign kubelet serving csr task
+  ansible.builtin.shell: "kubectl certificate approve {{ kubelet_csr.stdout }}"
+  environment:
+    KUBECONFIG: "{{ configFilePath }}/admin.conf"
+  when:
+    - masterInitial in ansible_facts['all_ipv4_addresses']
+    - kubelet_csr.stdout | length > 0
+  changed_when: false
+
+- name: create cilium-etcd-secrets secret task
+  ansible.builtin.shell:
+    cmd: "export KUBECONFIG={{ configFilePath }}/admin.conf && kubectl create secret generic -n kube-system cilium-etcd-secrets --from-file=etcd-client-ca.crt={{ certificatePath }}/etcd/etcd_ca.crt --from-file=etcd-client.key={{ certificatePath }}/etcd/etcd.key --from-file=etcd-client.crt={{ certificatePath }}/etcd/etcd.crt"
+  when: masterInitial in ansible_facts['all_ipv4_addresses'] 
+  failed_when: false
+
+- name: copy cilium deploy file task
+  ansible.builtin.template:
+    src: cilium.j2
+    dest: "{{ componentPath }}/cilium.yaml"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: deploy cilium cni plugin task
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/kubernetes/admin.conf
+    src: "{{ componentPath }}/cilium.yaml"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: copy ingress nginx deploy file task
+  ansible.builtin.template:
+    src: ingress-controller.j2
+    dest: "{{ componentPath }}/ingress-controller.yaml"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: deploy ingress nginx task
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/kubernetes/admin.conf
+    src: "{{ componentPath }}/ingress-controller.yaml"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: copy metrics server deploy file task
+  ansible.builtin.template:
+    src: metrics-server.j2
+    dest: "{{ componentPath }}/metrics-server.yaml"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']
+
+- name: deploy metrics server task
+  kubernetes.core.k8s:
+    state: present
+    kubeconfig: /etc/kubernetes/admin.conf
+    src: "{{ componentPath }}/metrics-server.yaml"
+  when: masterInitial in ansible_facts['all_ipv4_addresses']

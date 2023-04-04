@@ -1,0 +1,60 @@
+---
+# tasks file for tools
+#
+- name: add docker official dnf repo task
+  ansible.builtin.yum_repository:
+    name: docker-ce
+    description: containerd repo
+    baseurl: https://mirrors.aliyun.com/docker-ce/linux/centos/$releasever/$basearch/stable
+    gpgcheck: false
+
+- name: add kubernetes tsinghua repo task
+  ansible.builtin.yum_repository:
+    name: kubernetes
+    description: kubernetes repo
+    baseurl: https://mirrors.tuna.tsinghua.edu.cn/kubernetes/yum/repos/kubernetes-el7-$basearch
+    gpgcheck: false
+
+- name: install the dependency package task
+  ansible.builtin.dnf:
+    name:
+      - containerd.io
+      - "kubeadm-{{ kVersion }}"
+      - "kubectl-{{ kVersion }}"
+      - "kubelet-{{ kVersion }}"
+      - pip
+    state: present
+
+- name: install ansible kubernetes modules task
+  ansible.builtin.shell: pip3.9 install kubernetes -i https://pypi.tuna.tsinghua.edu.cn/simple/
+  when: masterInitial in ansible_facts['all_ipv4_addresses'] 
+
+- name: copy containerd config file task
+  ansible.builtin.template:
+    src: containerd-config.toml
+    dest: /etc/containerd/config.toml
+    mode: 0644
+  notify: restart containerd service handler
+
+- name: copy crictl config file task
+  ansible.builtin.copy:
+    src: crictl.yaml
+    dest: /etc/crictl.yaml
+    mode: 0644
+
+- name: started containerd service task
+  ansible.builtin.systemd:
+    name: containerd
+    state: started
+    enabled: true
+
+- name: copy kubelet service unit file task
+  ansible.builtin.template:
+    src: kubelet.service.j2
+    dest: /usr/lib/systemd/system/kubelet.service
+
+- name: enable kubelet service task
+  ansible.builtin.systemd:
+    name: kubelet
+    daemon_reload: true
+    enabled: true

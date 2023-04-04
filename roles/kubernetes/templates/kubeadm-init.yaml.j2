@@ -1,0 +1,71 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+bootstrapTokens:
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: {{ kJoinToken }}
+  ttl: 24h0m0s
+  usages:
+  - signing
+  - authentication
+localAPIEndpoint:
+  advertiseAddress: {{ masterInitial }}
+  bindPort: 6443
+nodeRegistration:
+  criSocket: unix:///run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
+  taints: 
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/master
+certificateKey: "{{ kCertificateKey }}"
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+apiServer:
+  certSANs:
+    - {{ kControlPlaneEndpoint }}
+  extraArgs:
+    service-node-port-range: 80-50000
+  timeoutForControlPlane: 4m0s
+  extraVolumes:
+    - hostPath: /etc/localtime
+      mountPath: /etc/localtime
+      name: timezone
+      readOnly: true
+certificatesDir: {{ certificatePath }}
+clusterName: {{ kName }}
+controllerManager:
+  extraVolumes:
+    - hostPath: /etc/localtime
+      mountPath: /etc/localtime
+      name: timezone
+      readOnly: true
+dns: {}
+etcd:
+  external:
+    endpoints:
+    {% for etcdip in etcdIPs %}
+  - https://{{ etcdip }}:2379
+    {% endfor -%}
+    caFile: {{ certificatePath }}/etcd/etcd_ca.crt
+    certFile: {{ certificatePath }}/etcd/etcd.crt
+    keyFile: {{ certificatePath }}/etcd/etcd.key
+imageRepository: {{ imageRepostry }}
+kubernetesVersion: {{ kVersion }}
+networking:
+  dnsDomain: cluster.local
+  podSubnet: {{ podCidr }}
+  serviceSubnet: {{ serviceCidr }}
+controlPlaneEndpoint: "{{ kControlPlaneEndpoint }}"
+scheduler: 
+  extraVolumes:
+    - hostPath: /etc/localtime
+      mountPath: /etc/localtime
+      name: timezone
+      readOnly: true
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+serverTLSBootstrap: true
+cgroupDriver: systemd

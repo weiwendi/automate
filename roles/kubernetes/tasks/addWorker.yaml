@@ -1,0 +1,15 @@
+- name: print join worker command task
+  ansible.builtin.shell: kubeadm token create --print-join-command
+  environment:
+    KUBECONFIG: "{{ configFilePath }}/admin.conf"
+  register: join_worker_command
+  when:
+    - masterInitial in ansible_facts['all_ipv4_addresses']
+    - addWorker
+
+- name: join worker task
+  ansible.builtin.shell: "{{ join_worker_command.out }}"
+  environment:
+    KUBECONFIG: "{{ configFilePath }}/admin.conf"
+  when:
+    - addWorker

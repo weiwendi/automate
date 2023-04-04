@@ -1,0 +1,21 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: {{ kControlPlaneEndpoint }}:6443
+    token: {{ kJoinToken }}
+    unsafeSkipCAVerification: true
+  timeout: 5m0s
+nodeRegistration:
+  kubeletExtraArgs:
+    node-ip: {{ ansible_facts['all_ipv4_addresses'] | intersect(kClusterIPs) | join('') }}
+  criSocket: unix:///run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
+  taints: null
+{% if 'kmasters' in group_names %}
+controlPlane:
+  localAPIEndpoint:
+    advertiseAddress: {{ ansible_facts['all_ipv4_addresses'] | intersect(kClusterIPs) | join('') }}
+  certificateKey: "{{ kCertificateKey }}"
+{% endif %}

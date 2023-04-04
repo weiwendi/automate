@@ -1,0 +1,26 @@
+---
+# defaults file for kubernetes
+#
+calicoVersion: 3.25.0
+certificatePath: /etc/kubernetes/pki
+componentPath: /etc/kubernetes/components
+configFilePath: /etc/kubernetes
+downloadPath: /tmp/kubernetes
+imageRepostry: registry.cn-hangzhou.aliyuncs.com/weiwendi
+kCertificateKey: f8424e9aa51ce26a94bfa635f20ca40b
+kClusterIPs:
+  - 10.211.55.63
+  - 10.211.55.64
+  - 10.211.55.65
+  - 10.211.55.66
+  - 10.211.55.67
+  - 10.211.55.68
+  - 10.211.55.9
+kControlPlaneEndpoint: 10.211.55.251
+kJoinToken: kufzw9.3nk54e0lj7l4c8cg
+# kJoinToken: jebxsn.wqp18190fupo0k0e
+kName: aiops_red
+kVersion: 1.26.2
+podCidr: 172.16.0.0/14
+serviceCidr: 10.96.0.0/16
+staticPath: /etc/kubernetes/manifests
