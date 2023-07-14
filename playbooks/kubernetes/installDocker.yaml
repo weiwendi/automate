@@ -1,0 +1,6 @@
+- name: install docker play
+  hosts: knodes
+  become: true
+  gather_facts: false
+  roles:
+    - docker
