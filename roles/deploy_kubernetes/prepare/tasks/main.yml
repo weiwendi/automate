@@ -1,0 +1,39 @@
+---
+# tasks file for prepare
+#
+- name: load module task
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - br_netfilter
+    - overlay
+
+- name: load module presistent task
+  ansible.builtin.copy:
+    content: |
+      br_netfilter
+      overlay
+    dest: /etc/modules-load.d/k8s.conf
+
+- name: set sysctl task
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: 1
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - net.ipv4.ip_forward
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+
+- name: disabled swap in fstab file task
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: "swap"
+    state: absent
+
+- name: disabled swap on the command line task
+  ansible.builtin.shell:
+    cmd: swapoff -a
