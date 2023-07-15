@@ -1,0 +1,11 @@
+#!/usr/bin/env playbook
+---
+- name: upgrade packages play
+  hosts: nodes
+  become: true
+  gather_facts: false
+
+  roles:
+    - role: docker
+      tags: docker
+...
