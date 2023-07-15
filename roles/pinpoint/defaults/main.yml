@@ -1,0 +1,5 @@
+---
+# defaults file for pinpoint
+#
+deployDir: /software/repos/pinpoint-docker
+version: 2.5.2

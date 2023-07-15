@@ -1,0 +1,15 @@
+#!/usr/bin/env playbook
+---
+- name: reboot play
+  hosts: nodes
+  become: true
+  gather_facts: false
+
+  roles:
+    - role: disabled_selinux
+      tags: disabled_selinux
+    - role: disabled_firewalld
+      tags: disabled_firewalld
+    - role: upgrade_packages
+      tags: upgrade_packages
+...

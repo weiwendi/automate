@@ -1,0 +1,46 @@
+---
+# tasks file for pinpoint
+#
+- name: disabled firewalld task
+  ansible.builtin.systemd:
+    name: firewalld
+    state: stopped
+    enabled: false
+
+- name: create deploy directory task
+  ansible.builtin.file:
+    path: "{{ deployDir }}"
+    state: directory
+    mode: 0755
+
+- name: install git command task
+  ansible.builtin.dnf:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - pip
+
+- name: install ansible docker compose task
+  ansible.builtin.shell: pip3 install docker docker-compose
+
+    #- name: clone pinpoint-docker project task
+    #ansible.builtin.git:
+    #repo: 'https://github.com/pinpoint-apm/pinpoint-docker.git'
+    #dest: "{{ deployDir }}"
+    #single_branch: true
+    #version: "{{ version }}"
+
+- name: pull images task
+  community.docker.docker_compose:
+    pull: true
+    project_src: "{{ deployDir }}"
+
+- name: install pinpoint task
+  community.docker.docker_compose:
+    project_src: "{{ deployDir }}"
+  register: output
+
+- name: show install results task
+  ansible.builtin.debug:
+    var: output

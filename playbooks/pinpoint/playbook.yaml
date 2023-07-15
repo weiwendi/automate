@@ -1,0 +1,11 @@
+#!/usr/bin/env playbook
+---
+- name: deploy pinpoint play
+  hosts: nodes
+  become: true
+  gather_facts: false
+
+  roles:
+    - role: pinpoint
+      tags: pinpoint
+...
