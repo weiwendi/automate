@@ -1,0 +1,8 @@
+---
+# tasks file for disabled_firewalld
+#
+- name: stopped firewalld task
+  ansible.builtin.systemd:
+    name: firewalld
+    enabled: false
+    state: stopped
